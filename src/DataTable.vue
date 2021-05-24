@@ -8,6 +8,7 @@
         <tr>
           <th :class="options.dt__th_class" v-for="tc in dt__tableColumns" :key="tc" >
             <span>{{ tc }}</span>
+            <a href="#" @click.prevent="dt__sortByColumn(tc)"> || sort {{dt_sorted_cols[tc]}}</a>
           </th>
         </tr>
       </thead>
@@ -53,7 +54,7 @@ export default {
     options: {
       type: Object,
       default: () => ({
-        dt__table_class: 'table w-full justify-center border-collapse border-2 border-gray-500',
+        dt__table_class: 'table w-full justify-center border-collapse border border-gray-400',
         dt__th_class: 'border border-gray-400 px-4 py-2 text-gray-800 text-left capitalize',
         dt__tb_class: 'border border-gray-400 px-4 py-2',
         dt__pagination_wrapper: 'relative z-0 inline-flex rounded-md shadow-sm -space-x-px',
@@ -102,7 +103,8 @@ export default {
       dt__shown_info: '',
       dt__total_pages: 1,
       dt__search_input: '',
-      dt__searched_data: []
+      dt__searched_data: [],
+      dt_sorted_cols: {}
     }
   },
   computed: {
@@ -160,12 +162,40 @@ export default {
       this.dt__current_page = 1
       this.dt__searched_data = this.dt__table_data.map(i => {
         for(let s in i){
-          // if(typeof i[s] === 'string'){
-            if(i[s].toString().toLowerCase().includes(data.toLowerCase()))
-              return i
-          // }
+          if(i[s].toString().toLowerCase().includes(data.toLowerCase()))
+            return i
         }
       }).filter(n => n !== undefined)
+      this.dt__filteredData()
+    },
+    dt__sortByColumn(col){
+      
+      let data = this.dt__searched_data.length || this.dt__search_input.length ? this.dt__searched_data : this.dt__table_data
+      
+      this.dt_sorted_cols[col] = this.dt_sorted_cols[col] === undefined ? 'asc' : (this.dt_sorted_cols[col] === 'asc' ? 'desc' :'asc')
+      
+      for (const key of Object.keys(this.dt_sorted_cols)) {
+        if(key !== col) this.dt_sorted_cols[key] = undefined
+      }
+
+      this.dt__searched_data = data.sort((a, b) => {
+        if(typeof a[col] === 'number'){
+          if(this.dt_sorted_cols[col] === 'asc'){
+            return a[col] - b[col];
+          }else{
+            this.dt_sorted_cols[col] = 'desc'
+            return b[col] - a[col];
+          }
+        }else{
+          let nameA = a[col].toString().toUpperCase(); // ignore upper and lowercase
+          let nameB = b[col].toString().toUpperCase(); // ignore upper and lowercase
+          if(this.dt_sorted_cols[col] === 'asc'){
+            return (nameA > nameB) ? 1 : ((nameA < nameB) ? -1 : 0)
+          }else{
+            return (nameA < nameB) ? 1 : ((nameA > nameB) ? -1 : 0)
+          }
+        }
+      })
       this.dt__filteredData()
     }
   },
