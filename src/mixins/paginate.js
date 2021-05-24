@@ -1,7 +1,7 @@
 const paginateMixin = {
   methods: {
 
-    paginate( totalItems, currentPage, perPage, maxPages ) {
+    dt__paginate( totalItems, currentPage, perPage, maxPages ) {
       
       // calculate total pages
       let totalPages = Math.ceil(totalItems / perPage);
