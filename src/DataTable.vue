@@ -13,6 +13,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr>
+          <td :class="options.dt__tb_class" v-for="col in dt__tableColumns" :key="col">
+            <input type="text" v-model="dt__filter_by_col[col]" :class="options.dt__filter_by_col_class" @keyup="dt__filterByCol(col)" :placeholder="`Filter by ${col}`" />
+          </td>
+        </tr>
         <tr v-for="(td, index) in dt__tableData" :key="td[index]">
           <td :class="options.dt__tb_class" v-for="col in dt__tableColumns" :key="col">{{ td[col] }}</td>
         </tr>
@@ -64,6 +69,7 @@ export default {
         dt__max_pages: 2,
         dt__shown_items: [ 5, 10, 25, 50, 75, 100],
         dt__search_input: 'border-2 border-gray-300 my-1',
+        dt__filter_by_col_class: 'border-2 border-gray-300 my-1',
         dt__no_items_class: '',
         dt_table_empty_info: 'No items found.'
       })
@@ -104,7 +110,9 @@ export default {
       dt__total_pages: 1,
       dt__search_input: '',
       dt__searched_data: [],
-      dt_sorted_cols: {}
+      dt_sorted_cols: {},
+      dt__filter_by_col: {},
+      dt__search_by_col_data: []
     }
   },
   computed: {
@@ -140,9 +148,9 @@ export default {
   },
   methods: {
     dt__filteredData(){
-      let data = this.dt__searched_data.length || this.dt__search_input.length ? this.dt__searched_data : this.dt__table_data
+      let data = (this.dt__searched_data.length || this.dt__search_input.length ? this.dt__searched_data : this.dt__table_data)
       let paginated = this.dt__paginate(data.length, this.dt__current_page, this.dt__per_page, this.dt__maxPages)
-      console.log(paginated);
+      // console.log(paginated);
       let { startIndex, endIndex, pages, totalPages } = paginated
       this.dt__filtered_data = data.slice(startIndex, endIndex+1)
       this.dt__pages = pages
@@ -157,20 +165,25 @@ export default {
       this.dt__current_page = page
       this.dt__filteredData()
     },
-    dt__searchInput(data){
+    dt__searchInput(data, col = false){
       this.dt__search_input = data
       this.dt__current_page = 1
       this.dt__searched_data = this.dt__table_data.map(i => {
-        for(let s in i){
-          if(i[s].toString().toLowerCase().includes(data.toLowerCase()))
+        if(col){
+          if(i[col].toString().toLowerCase().includes(data.toLowerCase()))
             return i
+        }else{
+          for(let s in i){
+            if(i[s].toString().toLowerCase().includes(data.toLowerCase()))
+              return i
+          }
         }
       }).filter(n => n !== undefined)
       this.dt__filteredData()
     },
     dt__sortByColumn(col){
       
-      let data = this.dt__searched_data.length || this.dt__search_input.length ? this.dt__searched_data : this.dt__table_data
+      let data = (this.dt__searched_data.length || this.dt__search_input.length ? this.dt__searched_data : this.dt__table_data)
       
       this.dt_sorted_cols[col] = this.dt_sorted_cols[col] === undefined ? 'asc' : (this.dt_sorted_cols[col] === 'asc' ? 'desc' :'asc')
       
@@ -197,6 +210,9 @@ export default {
         }
       })
       this.dt__filteredData()
+    },
+    dt__filterByCol(col){
+      this.dt__searchInput(this.dt__filter_by_col[col], col)
     }
   },
   created() {
