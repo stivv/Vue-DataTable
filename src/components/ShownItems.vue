@@ -1,18 +1,19 @@
 <template>
-  <div>
+  <span>
     <span>Show</span>
-    <select v-model="per_page">
+    <select v-model="per_page" :class="options.dt__shown_items_class">
       <option v-for="si in shownItems" :key="si" :value="si">{{si}}</option>
     </select>
     <span>entries</span>
-  </div>
+  </span>
 </template>
 
 <script>
 export default {
   props: {
     shown_items: Array,
-    perPage: Number || 10
+    perPage: Number || 10,
+    options: Object
   },
   data(){
     return {
@@ -37,3 +38,11 @@ export default {
   },
 }
 </script>
+<style scoped>
+.dt__shown_items_class{
+    height: 21px;
+    border-radius: 0;
+    border: 1px solid #aaa;
+    margin: 0 3px;
+}
+</style>

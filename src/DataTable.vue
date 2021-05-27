@@ -1,10 +1,12 @@
 <template>
 <div>
-  <shown-items :shown_items="dt__shownItems" :perPage="dt__per_page" @perPage="dt__perPage" />
-  <search-items :options="options" @keyUp="dt__searchInput($event)" />
+  <div class="dt__search_wrapper_class">
+    <shown-items :shown_items="dt__shownItems" :perPage="dt__per_page" :options="options" @perPage="dt__perPage" />
+    <search-items :options="options" @keyUp="dt__searchInput($event)" />
+  </div>
   <template v-if="dt__tableData.length">
     <table :class="options.dt__table_class">
-      <thead>
+      <thead :class="options.dt__thead_class">
         <tr>
           <th :class="options.dt__th_class" v-for="tc in dt__tableColumns" :key="tc" >
             <span>{{ tc }}</span>
@@ -12,34 +14,34 @@
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody :class="options.dt__tbody_class">
         <tr>
-          <td :class="options.dt__tb_class" v-for="col in dt__tableColumns" :key="col">
+          <td :class="options.dt__td_class" v-for="col in dt__tableColumns" :key="col">
             <input type="text" v-model="dt__filter_by_col[col]" :class="options.dt__filter_by_col_class" @keyup="dt__filterByCol(col)" :placeholder="`Filter by ${col}`" />
           </td>
         </tr>
         <tr v-for="(td, index) in dt__tableData" :key="td[index]">
-          <td :class="options.dt__tb_class" v-for="col in dt__tableColumns" :key="col">{{ td[col] }}</td>
+          <td :class="options.dt__td_class" v-for="col in dt__tableColumns" :key="col">{{ td[col] }}</td>
         </tr>
       </tbody>
     </table>
     <div>
       <span>{{dt__shown_info}}</span>
     </div>
-    <div v-if="dt__total_pages > 1">
-      <ul :class="options.dt__pagination_wrapper">
+    <div v-if="dt__total_pages > 1" :class="options.dt__pagination_container">
+      <div :class="options.dt__pagination_wrapper">
         
         <pagination-btn btn_text="First" :page="1" :show_btn="dt__show_first_btn" :options="options" @goToPage="dt__goToPage" />
         <pagination-btn btn_text="Prev" :page="dt__current_page - 1" :show_btn="dt__show_prev_btn" :options="options" @goToPage="dt__goToPage" />
         
-        <li  v-for="page in dt__pages" :key="page" :class="dt__current_page === page ? options.dt__pagination_active_element : options.dt__pagination_element">
-          <a href="#" @click.prevent="dt__goToPage(page)">{{page}}</a>
-        </li>
+        <a href="#" @click.prevent="dt__goToPage(page)" v-for="page in dt__pages" :key="page" :class="dt__current_page === page ? options.dt__pagination_active_element : options.dt__pagination_element">
+          {{page}}
+        </a>
 
         <pagination-btn btn_text="Next" :page="dt__current_page + 1" :show_btn="dt__show_next_btn" :options="options" @goToPage="dt__goToPage" />
         <pagination-btn btn_text="Last" :page="dt__total_pages" :show_btn="dt__show_next_btn" :options="options" @goToPage="dt__goToPage" />
     
-      </ul>
+      </div>
     </div>
   </template>
   <div v-else :class="options.dt__no_items_class">
@@ -59,18 +61,24 @@ export default {
     options: {
       type: Object,
       default: () => ({
-        dt__table_class: 'table w-full justify-center border-collapse border border-gray-400',
-        dt__th_class: 'border border-gray-400 px-4 py-2 text-gray-800 text-left capitalize',
-        dt__tb_class: 'border border-gray-400 px-4 py-2',
-        dt__pagination_wrapper: 'relative z-0 inline-flex rounded-md shadow-sm -space-x-px',
-        dt__pagination_element: 'bg-blue-50 border-gray-300 text-gray-800 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
-        dt__pagination_active_element: 'z-10 bg-blue-500 border-blue-500 text-blue-100 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
-        dt__pagination_disabled_element: 'disabled bg-blue-50 border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+        dt__table_class: 'dt__table_class',
+        dt__thead_class: 'dt__thead_class',
+        dt__tbody_class: 'dt__tbody_class',
+        dt__tfoot_class: 'dt__tfoot_class',
+        dt__th_class: 'dt__th_class',
+        dt__td_class: 'dt__td_class',
+        dt__pagination_container: 'dt__pagination_container',
+        dt__pagination_wrapper: 'dt__pagination_wrapper',
+        dt__pagination_element: 'dt__pagination_element',
+        dt__pagination_active_element: 'active',
+        dt__pagination_disabled_element: 'disabled',
         dt__max_pages: 2,
         dt__shown_items: [ 5, 10, 25, 50, 75, 100],
-        dt__search_input: 'border-2 border-gray-300 my-1',
-        dt__filter_by_col_class: 'border-2 border-gray-300 my-1',
-        dt__no_items_class: '',
+        dt__filter_by_col_class: 'dt__filter_by_col_class',
+        dt__search_input_class: 'dt__search_input_class',
+        dt__shown_items_class: 'dt__shown_items_class',
+        dt__search_wrapper_class: 'dt__search_wrapper_class',
+        dt__no_items_class: 'dt__no_items_class',
         dt_table_empty_info: 'No items found.'
       })
     },    
@@ -223,5 +231,85 @@ export default {
 </script>
 
 <style scoped>
-@import "https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css";
+.dt__table_class {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #4a4a4d;
+  /* font: 14px/1.4 "Helvetica Neue", Helvetica, Arial, sans-serif; */
+  width: 100%;
+}
+.dt__th_class, .dt__td_class {
+  padding: 10px 15px;
+  vertical-align: left;
+  text-align: left;
+}
+.dt__thead_class {
+  background: #e0e3e4;
+  color: #555;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.dt__tbody_class tr:nth-child(even) {
+  background: #f0f0f2;
+}
+.dt__td_class, .dt__th_class {
+  border-bottom: 1px solid #cecfd5;
+  border-right: 1px solid #cecfd5;
+}
+.dt__td_class:first-child, .dt__th_class:first-child {
+  border-left: 1px solid #cecfd5;
+}
+.dt__tfoot_class {
+  text-align: right;
+}
+.dt__tfoot_class tr:last-child {
+  background: #f0f0f2;
+  color: #395870;
+  font-weight: bold;
+}
+.dt__tfoot_class tr:last-child td:first-child {
+  border-bottom-left-radius: 5px;
+}
+.dt__tfoot_class tr:last-child td:last-child {
+  border-bottom-right-radius: 5px;
+}
+.dt__filter_by_col_class {
+    height: 21px;
+    border-radius: 0;
+    border: 1px solid #aaa;
+    width: 100%;
+}
+.dt__search_wrapper_class{
+  margin-bottom: 15px;
+}
+.dt__pagination_container{
+  text-align: center;
+}
+.dt__pagination_wrapper {
+  display: inline-block;
+}
+
+.dt__pagination_wrapper a {
+  color: black;
+  float: left;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+}
+
+.dt__pagination_wrapper a.active {
+  background-color: #777;
+  color: #e0e3e4;
+  border: 1px solid #777;
+}
+.dt__pagination_wrapper a.disabled {
+  background-color: #eaeeef;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.dt__pagination_wrapper a:hover:not(.active) {
+  background-color: #ddd;
+}
+
 </style>

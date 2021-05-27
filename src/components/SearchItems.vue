@@ -1,11 +1,10 @@
 <template>
-  <div :class="options.dt__search_wrapper">
-    <input 
-      type="text" 
-      :class="options.dt__search_input" 
-      v-model="search_input" 
-      @keyup="$emit('keyUp', search_input)" />
-  </div>
+  <input 
+    type="text" 
+    :class="options.dt__search_input_class" 
+    v-model="search_input"
+    placeholder="Type to search..."
+    @keyup="$emit('keyUp', search_input)" />
 </template>
 
 <script>
@@ -23,3 +22,11 @@ export default {
   },
 }
 </script>
+<style scoped>
+.dt__search_input_class{
+    height: 21px;
+    border-radius: 0;
+    border: 1px solid #aaa;
+    float: right;
+}
+</style>

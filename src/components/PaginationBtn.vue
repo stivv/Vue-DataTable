@@ -1,8 +1,8 @@
 <template>
-  <li :class="show_btn ? options.dt__pagination_element : options.dt__pagination_disabled_element">
-    <a v-if="show_btn" href="#" @click.prevent="$emit('goToPage', page)">{{btn_text}}</a>
-    <a v-else @click.prevent>{{btn_text}}</a>
-  </li>
+  <a v-if="show_btn" href="#" @click.prevent="$emit('goToPage', page)" :class="options.dt__pagination_element">
+    {{btn_text}}
+  </a>
+  <a v-else :class="options.dt__pagination_disabled_element" @click.prevent>{{btn_text}}</a>
 </template>
 
 <script>
