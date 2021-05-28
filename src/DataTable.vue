@@ -142,9 +142,12 @@ export default {
       return this.dt__tpo  && this.dt__current_page > 1
     },
     dt__show_prev_btn(){
-      return this.dt__tpo  && this.dt__current_page !== 1
+      return this.dt__current_page !== 1
     },
     dt__show_next_btn(){
+      return this.dt__current_page !== this.dt__total_pages
+    },
+    dt__show_last_btn(){
       return this.dt__tpo  && this.dt__current_page >= 1 && this.dt__current_page !== this.dt__total_pages
     },
   },
