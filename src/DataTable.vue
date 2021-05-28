@@ -9,8 +9,7 @@
       <thead :class="options.dt__thead_class">
         <tr>
           <th :class="options.dt__th_class" v-for="tc in dt__tableColumns" :key="tc" >
-            <span>{{ tc }}</span>
-            <a href="#" @click.prevent="dt__sortByColumn(tc)"> || sort {{dt_sorted_cols[tc]}}</a>
+            <span :class="dt_sorted_cols[tc] ? (dt_sorted_cols[tc] === 'asc' ? 'sort-asc' : 'sort-desc') : ''" class="dt__sort-by" @click.prevent="dt__sortByColumn(tc)">{{ tc }}</span>
           </th>
         </tr>
       </thead>
@@ -312,4 +311,38 @@ export default {
   background-color: #ddd;
 }
 
+th .dt__sort-by,
+td .dt__sort-by { 
+	display: block;
+	width: 100%;
+}
+th .dt__sort-by { 
+	padding-right: 18px;
+	position: relative;
+  cursor: pointer;
+}
+.dt__sort-by:before,
+.dt__sort-by:after {
+	border: 4px solid transparent;
+	content: "";
+	display: block;
+	height: 0;
+	right: 15px;
+	top: 50%;
+	position: absolute;
+	width: 0;
+}
+.dt__sort-by:not(.sort-desc):before {
+	border-bottom-color: #666;
+	margin-top: -9px;
+  display: block;
+}
+.dt__sort-by:not(.sort-asc):after {
+	border-top-color: #666;
+	margin-top: 1px;
+  display: block;
+}
+.dt__sort-by:after, .dt__sort-by:before{
+  display: none;
+}
 </style>
